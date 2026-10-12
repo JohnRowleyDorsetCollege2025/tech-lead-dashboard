@@ -1,0 +1,24 @@
+@baseUrl = http://localhost:5080
+
+GET {{baseUrl}}/api/assets
+
+### APIs deployed in Production
+GET {{baseUrl}}/api/assets?assetType=Api&environment=Production
+
+### Asset details
+GET {{baseUrl}}/api/assets/policy-api
+
+### Direct consumers and dependencies
+GET {{baseUrl}}/api/assets/policy-api/relationships?environment=Production
+
+### Graph
+GET {{baseUrl}}/api/graph?environment=Production
+
+### Impact of changing StaticDB
+GET {{baseUrl}}/api/assets/static-db/impact?environment=Production
+
+### Policy API integration dependencies
+GET {{baseUrl}}/api/assets/policy-api/impact?direction=dependencies&maxDepth=5
+
+### Potential consumers of an event change
+GET {{baseUrl}}/api/assets/policy-updated/impact?environment=Production

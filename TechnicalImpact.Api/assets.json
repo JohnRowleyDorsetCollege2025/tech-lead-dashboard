@@ -1,0 +1,1002 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "broker-portal",
+      "name": "Broker Portal",
+      "assetType": "Application",
+      "description": "Mock Broker Portal supporting Distribution.",
+      "ownerTeam": "Distribution",
+      "businessCapability": "Distribution",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "Blazor",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/broker-portal",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "broker-portal-dev",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://broker-portal.dev.example.invalid"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "broker-portal-uat",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://broker-portal.uat.example.invalid"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "broker-portal-production",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://broker-portal.production.example.invalid"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "quote-api",
+      "name": "Quote API",
+      "assetType": "Api",
+      "description": "Mock Quote API supporting Quotation.",
+      "ownerTeam": "Quotation",
+      "businessCapability": "Quotation",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "ASP.NET Core",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/quote-api",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "quote-api-dev",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://quote-api.dev.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://quote-api.dev.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "quote-api-uat",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://quote-api.uat.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://quote-api.uat.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "quote-api-production",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://quote-api.production.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://quote-api.production.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "policy-api",
+      "name": "Policy API",
+      "assetType": "Api",
+      "description": "Mock Policy API supporting Policy Administration.",
+      "ownerTeam": "Policy Administration",
+      "businessCapability": "Policy Administration",
+      "criticality": "High",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "ASP.NET Core",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/policy-api",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-api-dev",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://policy-api.dev.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://policy-api.dev.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-api-uat",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://policy-api.uat.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://policy-api.uat.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-api-production",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://policy-api.production.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://policy-api.production.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "occupation-api",
+      "name": "Occupation API",
+      "assetType": "Api",
+      "description": "Mock Occupation API supporting Product Configuration.",
+      "ownerTeam": "Product Configuration",
+      "businessCapability": "Product Configuration",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "ASP.NET Core",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/occupation-api",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "occupation-api-dev",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://occupation-api.dev.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://occupation-api.dev.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "occupation-api-uat",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://occupation-api.uat.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://occupation-api.uat.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "occupation-api-production",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://occupation-api.production.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://occupation-api.production.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "pricing-api",
+      "name": "Pricing API",
+      "assetType": "Api",
+      "description": "Mock Pricing API supporting Pricing.",
+      "ownerTeam": "Pricing",
+      "businessCapability": "Pricing",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "ASP.NET Core",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/pricing-api",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "pricing-api-dev",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://pricing-api.dev.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://pricing-api.dev.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "pricing-api-uat",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://pricing-api.uat.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://pricing-api.uat.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "pricing-api-production",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://pricing-api.production.example.invalid"
+            },
+            {
+              "kind": "Health",
+              "url": "https://pricing-api.production.example.invalid/health"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "static-db",
+      "name": "StaticDB",
+      "assetType": "Database",
+      "description": "Mock StaticDB supporting Product Configuration.",
+      "ownerTeam": "Product Configuration",
+      "businessCapability": "Product Configuration",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "SQL Server"
+      ],
+      "repository": null,
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "static-db-dev",
+          "endpoints": [],
+          "database": {
+            "engine": "SqlServer",
+            "server": "sql-dev.example.invalid",
+            "databaseName": "static_db"
+          },
+          "version": null
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "static-db-uat",
+          "endpoints": [],
+          "database": {
+            "engine": "SqlServer",
+            "server": "sql-uat.example.invalid",
+            "databaseName": "static_db"
+          },
+          "version": null
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "static-db-production",
+          "endpoints": [],
+          "database": {
+            "engine": "SqlServer",
+            "server": "sql-production.example.invalid",
+            "databaseName": "static_db"
+          },
+          "version": null
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "policy-db",
+      "name": "Policy Database",
+      "assetType": "Database",
+      "description": "Mock Policy Database supporting Policy Administration.",
+      "ownerTeam": "Policy Administration",
+      "businessCapability": "Policy Administration",
+      "criticality": "High",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "SQL Server"
+      ],
+      "repository": null,
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-db-dev",
+          "endpoints": [],
+          "database": {
+            "engine": "SqlServer",
+            "server": "sql-dev.example.invalid",
+            "databaseName": "policy_db"
+          },
+          "version": null
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-db-uat",
+          "endpoints": [],
+          "database": {
+            "engine": "SqlServer",
+            "server": "sql-uat.example.invalid",
+            "databaseName": "policy_db"
+          },
+          "version": null
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-db-production",
+          "endpoints": [],
+          "database": {
+            "engine": "SqlServer",
+            "server": "sql-production.example.invalid",
+            "databaseName": "policy_db"
+          },
+          "version": null
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "policy-updated",
+      "name": "Policy Updated Topic",
+      "assetType": "MessagingTopic",
+      "description": "Mock Policy Updated Topic supporting Policy Administration.",
+      "ownerTeam": "Policy Administration",
+      "businessCapability": "Policy Administration",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "Azure Service Bus"
+      ],
+      "repository": null,
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-updated-dev",
+          "endpoints": [
+            {
+              "kind": "ServiceBus",
+              "url": "sb://insurance-dev.servicebus.example.invalid/policy-updated"
+            }
+          ],
+          "database": null,
+          "version": null
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-updated-uat",
+          "endpoints": [
+            {
+              "kind": "ServiceBus",
+              "url": "sb://insurance-uat.servicebus.example.invalid/policy-updated"
+            }
+          ],
+          "database": null,
+          "version": null
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "policy-updated-production",
+          "endpoints": [
+            {
+              "kind": "ServiceBus",
+              "url": "sb://insurance-production.servicebus.example.invalid/policy-updated"
+            }
+          ],
+          "database": null,
+          "version": null
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "claims-worker",
+      "name": "Claims Integration Worker",
+      "assetType": "Worker",
+      "description": "Mock Claims Integration Worker supporting Claims.",
+      "ownerTeam": "Claims",
+      "businessCapability": "Claims",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "Azure Functions",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/claims-worker",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "Azure",
+          "resourceName": "claims-worker-dev",
+          "endpoints": [],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "Azure",
+          "resourceName": "claims-worker-uat",
+          "endpoints": [],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "Azure",
+          "resourceName": "claims-worker-production",
+          "endpoints": [],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "security-library",
+      "name": "Company Security Library",
+      "assetType": "Library",
+      "description": "Mock Company Security Library supporting Platform.",
+      "ownerTeam": "Platform",
+      "businessCapability": "Platform",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "NuGet",
+        ".NET 10"
+      ],
+      "repository": {
+        "provider": "AzureDevOps",
+        "url": "https://dev.azure.com/example/Insurance/_git/security-library",
+        "defaultBranch": "main",
+        "path": null
+      },
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "PackageFeed",
+          "resourceName": "security-library-dev",
+          "endpoints": [],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "PackageFeed",
+          "resourceName": "security-library-uat",
+          "endpoints": [],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "PackageFeed",
+          "resourceName": "security-library-production",
+          "endpoints": [],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "payment-provider",
+      "name": "External Payment Provider",
+      "assetType": "ExternalSystem",
+      "description": "Mock External Payment Provider supporting Payments.",
+      "ownerTeam": "External Supplier",
+      "businessCapability": "Payments",
+      "criticality": "Medium",
+      "lifecycleStatus": "Active",
+      "technologies": [
+        "HTTPS"
+      ],
+      "repository": null,
+      "deployments": [
+        {
+          "environment": "Dev",
+          "hostingPlatform": "External",
+          "resourceName": "payment-provider-dev",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://payment-provider.dev.example.invalid"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Uat",
+          "hostingPlatform": "External",
+          "resourceName": "payment-provider-uat",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://payment-provider.uat.example.invalid"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        },
+        {
+          "environment": "Production",
+          "hostingPlatform": "External",
+          "resourceName": "payment-provider-production",
+          "endpoints": [
+            {
+              "kind": "BaseUrl",
+              "url": "https://payment-provider.production.example.invalid"
+            }
+          ],
+          "database": null,
+          "version": "1.0.0"
+        }
+      ],
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-01",
+      "sourceAssetId": "broker-portal",
+      "targetAssetId": "quote-api",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "broker-portal Calls quote-api",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-02",
+      "sourceAssetId": "broker-portal",
+      "targetAssetId": "policy-api",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "broker-portal Calls policy-api",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-03",
+      "sourceAssetId": "quote-api",
+      "targetAssetId": "occupation-api",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "quote-api Calls occupation-api",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-04",
+      "sourceAssetId": "quote-api",
+      "targetAssetId": "pricing-api",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "quote-api Calls pricing-api",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-05",
+      "sourceAssetId": "quote-api",
+      "targetAssetId": "policy-api",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "quote-api Calls policy-api",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-06",
+      "sourceAssetId": "occupation-api",
+      "targetAssetId": "static-db",
+      "relationshipType": "ReadsFrom",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "occupation-api ReadsFrom static-db",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-07",
+      "sourceAssetId": "pricing-api",
+      "targetAssetId": "static-db",
+      "relationshipType": "ReadsFrom",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "pricing-api ReadsFrom static-db",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-08",
+      "sourceAssetId": "policy-api",
+      "targetAssetId": "policy-db",
+      "relationshipType": "ReadsFrom",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "policy-api ReadsFrom policy-db",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-09",
+      "sourceAssetId": "policy-api",
+      "targetAssetId": "policy-db",
+      "relationshipType": "WritesTo",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "policy-api WritesTo policy-db",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-10",
+      "sourceAssetId": "policy-api",
+      "targetAssetId": "policy-updated",
+      "relationshipType": "PublishesTo",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "policy-api PublishesTo policy-updated",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-11",
+      "sourceAssetId": "claims-worker",
+      "targetAssetId": "policy-updated",
+      "relationshipType": "ConsumesFrom",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "claims-worker ConsumesFrom policy-updated",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-12",
+      "sourceAssetId": "claims-worker",
+      "targetAssetId": "policy-api",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "claims-worker Calls policy-api",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-13",
+      "sourceAssetId": "quote-api",
+      "targetAssetId": "security-library",
+      "relationshipType": "DependsOn",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "quote-api DependsOn security-library",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-14",
+      "sourceAssetId": "policy-api",
+      "targetAssetId": "security-library",
+      "relationshipType": "DependsOn",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "policy-api DependsOn security-library",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    },
+    {
+      "id": "rel-15",
+      "sourceAssetId": "policy-api",
+      "targetAssetId": "payment-provider",
+      "relationshipType": "Calls",
+      "environments": [
+        "Dev",
+        "Uat",
+        "Production"
+      ],
+      "description": "policy-api Calls payment-provider",
+      "evidence": {
+        "source": "Mock catalogue",
+        "lastVerifiedDate": "2026-10-06",
+        "verifiedBy": "Demo architect",
+        "confidence": "Verified"
+      }
+    }
+  ]
+}

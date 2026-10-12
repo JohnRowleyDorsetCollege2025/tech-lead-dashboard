@@ -1,0 +1,108 @@
+﻿@page "/"
+@using tia_manager.Blazor.Services
+@inject RepositoryApiClient RepositoryApi
+
+<PageTitle>Repositories</PageTitle>
+
+<h1>Repositories</h1>
+<p>Browse configured repositories and their base branches.</p>
+
+@if (_isLoading)
+{
+    <p role="status">Loading repositories...</p>
+}
+else if (_errorMessage is not null)
+{
+    <p role="alert" class="text-danger">@_errorMessage</p>
+}
+else if (_repositories.Count == 0)
+{
+    <p>No repositories are configured.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var status in _repositories)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="d-flex flex-column">
+                    <a class="text-decoration-none text-body" href="@GetDetailsUrl(status.Repository)">
+                        @status.Repository.Label
+                    </a>
+                    <small>
+                        <a class="text-decoration-none text-body" href="@GetGitHubUrl(status.Repository)" target="_blank" rel="noopener noreferrer">
+                            @GetGitHubUrl(status.Repository)
+                        </a>
+                    </small>
+                </span>
+                <span class="d-flex align-items-center gap-2">
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="@GetDetailsUrl(status.Repository)">Branches</a>
+                    <span class="badge text-bg-secondary">Base: @status.Repository.BaseBranch</span>
+                    @if (status.IsBaseBehindAnyBranch == true)
+                    {
+                        <span class="text-warning" role="img" aria-label="Base branch is behind one or more branches"
+                              title="The base branch is behind one or more branches">⚠</span>
+                    }
+                    else if (status.IsBaseBehindAnyBranch is null)
+                    {
+                        <span class="text-muted" title="@status.Error">Branch status unavailable</span>
+                    }
+                </span>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private IReadOnlyList<RepositoryBranchStatus> _repositories = [];
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var repositories = await RepositoryApi.GetRepositoriesAsync();
+            _repositories = await Task.WhenAll(repositories.Select(GetRepositoryStatusAsync));
+        }
+        catch (HttpRequestException)
+        {
+            _errorMessage = "Could not load repositories from the BFF. Check that the API is running and BffApi:BaseUrl is correct.";
+        }
+        catch (InvalidDataException)
+        {
+            _errorMessage = "The BFF returned an invalid repository list.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task<RepositoryBranchStatus> GetRepositoryStatusAsync(RepositorySummary repository)
+    {
+        try
+        {
+            var statistics = await RepositoryApi.GetBranchStatisticsAsync(repository);
+            return new RepositoryBranchStatus(
+                repository,
+                statistics.Any(branch => branch.BranchAheadBy > 0),
+                null);
+        }
+        catch (HttpRequestException)
+        {
+            return new RepositoryBranchStatus(repository, null, "Could not retrieve branch statistics from the BFF.");
+        }
+        catch (InvalidDataException)
+        {
+            return new RepositoryBranchStatus(repository, null, "The BFF returned invalid branch statistics.");
+        }
+    }
+
+    private static string GetGitHubUrl(RepositorySummary repository) =>
+        $"https://github.com/{Uri.EscapeDataString(repository.Owner)}/{Uri.EscapeDataString(repository.Name)}";
+
+    private static string GetDetailsUrl(RepositorySummary repository) =>
+        $"/repositories/{Uri.EscapeDataString(repository.Owner)}/{Uri.EscapeDataString(repository.Name)}";
+}

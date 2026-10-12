@@ -1,0 +1,227 @@
+@page "/repositories/{Owner}/{Name}"
+@rendermode InteractiveServer
+@using tia_manager.Blazor.Services
+@inject RepositoryApiClient RepositoryApi
+
+<PageTitle>@(_repository?.Label ?? Name) branches</PageTitle>
+
+<p><a href="/">← All repositories</a></p>
+<h1>@(_repository?.Label ?? Name)</h1>
+
+@if (_isLoading)
+{
+    <p role="status">Loading branches and comparison status...</p>
+}
+else if (_errorMessage is not null)
+{
+    <p role="alert" class="text-danger">@_errorMessage</p>
+}
+else if (_rows.Count == 0)
+{
+    <p>No branches were found.</p>
+}
+else
+{
+    <p>Branch status is compared with <strong>@_baseBranch</strong>.</p>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Branch</th>
+                    <th scope="col">
+                        <button class="btn btn-link p-0 text-body" @onclick="() => SetSort(SortColumn.LastCommit)">
+                            Latest committer date @SortIndicator(SortColumn.LastCommit)
+                        </button>
+                    </th>
+                    <th scope="col">
+                        <button class="btn btn-link p-0 text-body" @onclick="() => SetSort(SortColumn.Ahead)">
+                            Commits ahead @SortIndicator(SortColumn.Ahead)
+                        </button>
+                    </th>
+                    <th scope="col">
+                        <button class="btn btn-link p-0 text-body" @onclick="() => SetSort(SortColumn.Behind)">
+                            Commits behind @SortIndicator(SortColumn.Behind)
+                        </button>
+                    </th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in SortedRows)
+                {
+                    <tr>
+                        <th scope="row">
+                            @row.Branch.Name
+                            @if (IsBaseBranch(row))
+                            {
+                                <span class="badge text-bg-primary ms-1">Base branch</span>
+                            }
+                            @if (row.Branch.Protected)
+                            {
+                                <span class="badge text-bg-secondary ms-1">Protected</span>
+                            }
+                        </th>
+                        <td>
+                            @if (row.Branch.LastCommitterDate is { } lastCommitterDate)
+                            {
+                                <time datetime="@lastCommitterDate.ToString("O")" title="@lastCommitterDate.ToString("u")">
+                                    @lastCommitterDate.ToLocalTime().ToString("g")
+                                </time>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Unknown</span>
+                            }
+                        </td>
+                        <td>@(IsBaseBranch(row) ? "—" : row.Statistics.BranchAheadBy)</td>
+                        <td>@(IsBaseBranch(row) ? "—" : row.Statistics.BaseAheadBy)</td>
+                        <td>
+                            <span class="badge @(IsBaseBranch(row) ? GetBaseStatusBadgeClass() : GetStatusBadgeClass(row.Statistics))">
+                                @(IsBaseBranch(row) ? GetBaseStatusText() : GetStatusText(row.Statistics))
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Owner { get; set; } = "";
+
+    [Parameter]
+    public string Name { get; set; } = "";
+
+    private IReadOnlyList<RepositoryBranchRow> _rows = [];
+    private RepositorySummary? _repository;
+    private string _baseBranch = "";
+    private int _branchesAheadCount;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    private SortColumn _sortColumn = SortColumn.LastCommit;
+    private bool _descending = true;
+
+    private IEnumerable<RepositoryBranchRow> SortedRows => _sortColumn switch
+    {
+        SortColumn.Ahead => OrderRowsBy(row => row.Statistics.BranchAheadBy),
+        SortColumn.Behind => OrderRowsBy(row => row.Statistics.BaseAheadBy),
+        _ => _descending
+            ? _rows.OrderByDescending(row => row.Branch.LastCommitterDate)
+            : _rows.OrderBy(row => row.Branch.LastCommitterDate)
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        _rows = [];
+        _branchesAheadCount = 0;
+
+        try
+        {
+            var repositories = await RepositoryApi.GetRepositoriesAsync();
+            var repository = repositories.FirstOrDefault(candidate =>
+                string.Equals(candidate.Owner, Owner, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(candidate.Name, Name, StringComparison.OrdinalIgnoreCase));
+
+            if (repository is null)
+            {
+                _errorMessage = "This repository is not configured in the BFF.";
+                return;
+            }
+
+            _repository = repository;
+            _baseBranch = repository.BaseBranch;
+            var branchesTask = RepositoryApi.GetBranchesAsync(repository);
+            var statisticsTask = RepositoryApi.GetBranchStatisticsAsync(repository);
+            await Task.WhenAll(branchesTask, statisticsTask);
+
+            var statisticsByBranch = statisticsTask.Result.ToDictionary(
+                statistic => statistic.Branch,
+                StringComparer.Ordinal);
+            _rows = branchesTask.Result
+                .Where(branch => statisticsByBranch.ContainsKey(branch.Name))
+                .Select(branch => new RepositoryBranchRow(branch, statisticsByBranch[branch.Name]))
+                .ToArray();
+            _branchesAheadCount = _rows.Count(row =>
+                !IsBaseBranch(row) && row.Statistics.BranchAheadBy > 0);
+        }
+        catch (HttpRequestException)
+        {
+            _errorMessage = "Could not load branch data from the BFF. Check that the API is running and BffApi:BaseUrl is correct.";
+        }
+        catch (InvalidDataException)
+        {
+            _errorMessage = "The BFF returned invalid branch data.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private IEnumerable<RepositoryBranchRow> OrderRowsBy(Func<RepositoryBranchRow, int> selector) =>
+        _descending ? _rows.OrderByDescending(selector) : _rows.OrderBy(selector);
+
+    private void SetSort(SortColumn column)
+    {
+        if (_sortColumn == column)
+        {
+            _descending = !_descending;
+        }
+        else
+        {
+            _sortColumn = column;
+            _descending = true;
+        }
+    }
+
+    private string SortIndicator(SortColumn column) =>
+        _sortColumn != column ? "" : _descending ? "↓" : "↑";
+
+    private bool IsBaseBranch(RepositoryBranchRow row) =>
+        string.Equals(row.Branch.Name, _baseBranch, StringComparison.OrdinalIgnoreCase);
+
+    private string GetBaseStatusText() => _branchesAheadCount switch
+    {
+        0 => "No branches ahead",
+        1 => "1 branch ahead",
+        _ => $"{_branchesAheadCount} branches ahead"
+    };
+
+    private string GetBaseStatusBadgeClass() =>
+        _branchesAheadCount > 0 ? "text-bg-warning" : "text-bg-success";
+
+    private static string GetStatusText(BranchStatisticsSummary statistics)
+    {
+        var ahead = statistics.BranchAheadBy;
+        var behind = statistics.BaseAheadBy;
+
+        return (ahead, behind) switch
+        {
+            (0, 0) => "Up to date",
+            (> 0, > 0) => $"Diverged · {ahead} ahead, {behind} behind",
+            (> 0, _) => $"Ahead · {ahead}",
+            (_, > 0) => $"Behind · {behind}",
+            _ => "Unknown"
+        };
+    }
+
+    private static string GetStatusBadgeClass(BranchStatisticsSummary statistics) =>
+        statistics.BranchAheadBy > 0 && statistics.BaseAheadBy > 0
+            ? "text-bg-warning"
+            : statistics.BranchAheadBy > 0
+                ? "text-bg-info"
+                : statistics.BaseAheadBy > 0
+                    ? "text-bg-danger"
+                    : "text-bg-success";
+
+    private enum SortColumn
+    {
+        LastCommit,
+        Ahead,
+        Behind
+    }
+}

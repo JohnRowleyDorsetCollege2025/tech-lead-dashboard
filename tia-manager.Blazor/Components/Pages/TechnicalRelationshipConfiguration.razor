@@ -1,0 +1,177 @@
+@page "/relationships/new"
+@rendermode InteractiveServer
+@using tia_manager.Blazor.Services
+@inject TechnicalAssetApiClient AssetApi
+
+<PageTitle>Configure relationship</PageTitle>
+
+<p><a href="/assets">← Technical assets</a></p>
+<h1>Configure relationship</h1>
+<p class="text-muted">Mock configuration form. Values are not saved or sent to the API.</p>
+
+@if (_isLoading)
+{
+    <p role="status">Loading assets...</p>
+}
+else if (_errorMessage is not null)
+{
+    <p role="alert" class="text-danger">@_errorMessage</p>
+}
+else if (_assets.Count < 2)
+{
+    <p>At least two assets must be available to configure a relationship.</p>
+}
+else
+{
+    <form @onsubmit:preventDefault="true">
+        <section class="card mb-4">
+            <div class="card-header"><h2 class="h5 mb-0">Relationship</h2></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="relationship-id">Relationship ID</label>
+                        <input id="relationship-id" class="form-control" @bind="_draft.Id" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="relationship-type">Relationship type</label>
+                        <select id="relationship-type" class="form-select" @bind="_draft.RelationshipType">
+                            <option value="">Select relationship type</option>
+                            @foreach (var relationshipType in RelationshipTypes)
+                            {
+                                <option value="@relationshipType">@relationshipType</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="source-asset">Source asset</label>
+                        <select id="source-asset" class="form-select" @bind="_draft.SourceAssetId">
+                            <option value="">Select source asset</option>
+                            @foreach (var asset in _assets)
+                            {
+                                <option value="@asset.Id">@asset.Name (@asset.Id)</option>
+                            }
+                        </select>
+                        <div class="form-text">The source asset depends on or relates to the target.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="target-asset">Target asset</label>
+                        <select id="target-asset" class="form-select" @bind="_draft.TargetAssetId">
+                            <option value="">Select target asset</option>
+                            @foreach (var asset in _assets)
+                            {
+                                <option value="@asset.Id">@asset.Name (@asset.Id)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="relationship-description">Description</label>
+                        <textarea id="relationship-description" class="form-control" rows="3"
+                                  @bind="_draft.Description"></textarea>
+                    </div>
+                    <fieldset class="col-12">
+                        <legend class="form-label">Environments</legend>
+                        <div class="d-flex flex-wrap gap-3">
+                            @foreach (var environment in Environments)
+                            {
+                                <div class="form-check">
+                                    <input id="environment-@environment" class="form-check-input" type="checkbox"
+                                           checked="@_draft.Environments.Contains(environment)"
+                                           @onchange="args => ToggleEnvironment(environment, args)" />
+                                    <label class="form-check-label" for="environment-@environment">@environment</label>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </section>
+
+        <section class="card mb-4">
+            <div class="card-header"><h2 class="h5 mb-0">Evidence</h2></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="evidence-source">Source</label>
+                        <input id="evidence-source" class="form-control" @bind="_draft.EvidenceSource" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="evidence-confidence">Confidence</label>
+                        <input id="evidence-confidence" class="form-control" @bind="_draft.EvidenceConfidence"
+                               placeholder="Verified, Inferred..." />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="evidence-date">Last verified date</label>
+                        <input id="evidence-date" class="form-control" type="date"
+                               @bind="_draft.EvidenceLastVerifiedDate" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="evidence-verified-by">Verified by</label>
+                        <input id="evidence-verified-by" class="form-control" @bind="_draft.EvidenceVerifiedBy" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <button type="submit" class="btn btn-primary" disabled>Save relationship (not implemented)</button>
+    </form>
+}
+
+@code {
+    private static readonly string[] RelationshipTypes =
+        ["Calls", "ReadsFrom", "WritesTo", "PublishesTo", "ConsumesFrom", "DependsOn"];
+    private static readonly string[] Environments = ["Dev", "Uat", "Production"];
+
+    private IReadOnlyList<TechnicalAssetSummary> _assets = [];
+    private readonly RelationshipDraft _draft = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _assets = await AssetApi.GetAssetsAsync();
+        }
+        catch (HttpRequestException)
+        {
+            _errorMessage = "Could not load assets. Check that the Technical Impact API is running and TechnicalImpactApi:BaseUrl is correct.";
+        }
+        catch (InvalidDataException)
+        {
+            _errorMessage = "The Technical Impact API returned an invalid asset list.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void ToggleEnvironment(string environment, ChangeEventArgs args)
+    {
+        if (bool.TryParse(args.Value?.ToString(), out var isSelected) && isSelected)
+        {
+            if (!_draft.Environments.Contains(environment))
+            {
+                _draft.Environments.Add(environment);
+            }
+        }
+        else
+        {
+            _draft.Environments.Remove(environment);
+        }
+    }
+
+    private sealed class RelationshipDraft
+    {
+        public string Id { get; set; } = "";
+        public string SourceAssetId { get; set; } = "";
+        public string TargetAssetId { get; set; } = "";
+        public string RelationshipType { get; set; } = "";
+        public List<string> Environments { get; } = [];
+        public string Description { get; set; } = "";
+        public string EvidenceSource { get; set; } = "";
+        public DateTime? EvidenceLastVerifiedDate { get; set; }
+        public string EvidenceVerifiedBy { get; set; } = "";
+        public string EvidenceConfidence { get; set; } = "";
+    }
+}

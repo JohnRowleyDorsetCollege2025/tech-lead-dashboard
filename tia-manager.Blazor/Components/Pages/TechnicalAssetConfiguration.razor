@@ -1,0 +1,275 @@
+@page "/assets/new"
+@rendermode InteractiveServer
+
+<PageTitle>Configure technical asset</PageTitle>
+
+<p><a href="/assets">← All technical assets</a></p>
+<h1>Configure technical asset</h1>
+<p class="text-muted">Mock configuration form. Values are not saved or sent to the API.</p>
+
+<form @onsubmit:preventDefault="true">
+    <section class="card mb-4">
+        <div class="card-header"><h2 class="h5 mb-0">Asset details</h2></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="asset-id">ID</label>
+                    <input id="asset-id" class="form-control" @bind="_asset.Id" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="asset-name">Name</label>
+                    <input id="asset-name" class="form-control" @bind="_asset.Name" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="asset-type">Asset type</label>
+                    <input id="asset-type" class="form-control" @bind="_asset.AssetType" placeholder="Application, Api, Database..." />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="owner-team">Owner team</label>
+                    <input id="owner-team" class="form-control" @bind="_asset.OwnerTeam" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="business-capability">Business capability</label>
+                    <input id="business-capability" class="form-control" @bind="_asset.BusinessCapability" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="criticality">Criticality</label>
+                    <select id="criticality" class="form-select" @bind="_asset.Criticality">
+                        <option value="">Select criticality</option>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                        <option>Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="lifecycle-status">Lifecycle status</label>
+                    <input id="lifecycle-status" class="form-control" @bind="_asset.LifecycleStatus" placeholder="Active, Planned, Retired..." />
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea id="description" class="form-control" rows="3" @bind="_asset.Description"></textarea>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="technologies">Technologies</label>
+                    <input id="technologies" class="form-control" @bind="_asset.Technologies"
+                           placeholder="Comma-separated, e.g. ASP.NET Core, .NET 10" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Repository</h2>
+        </div>
+        <div class="card-body">
+            <div class="form-check mb-3">
+                <input id="has-repository" class="form-check-input" type="checkbox" @bind="_asset.HasRepository" />
+                <label class="form-check-label" for="has-repository">This asset has an associated repository</label>
+            </div>
+            @if (_asset.HasRepository)
+            {
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="repository-provider">Provider</label>
+                        <input id="repository-provider" class="form-control" @bind="_asset.RepositoryProvider" placeholder="GitHub, AzureDevOps..." />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="repository-url">Repository URL</label>
+                        <input id="repository-url" class="form-control" type="url" @bind="_asset.RepositoryUrl" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="repository-branch">Default branch</label>
+                        <input id="repository-branch" class="form-control" @bind="_asset.RepositoryDefaultBranch" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="repository-path">Path (optional)</label>
+                        <input id="repository-path" class="form-control" @bind="_asset.RepositoryPath" />
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0">Deployments</h2>
+            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddDeployment">Add deployment</button>
+        </div>
+        <div class="card-body">
+            @if (_asset.Deployments.Count == 0)
+            {
+                <p class="text-muted mb-0">No deployments added.</p>
+            }
+            @for (var deploymentIndex = 0; deploymentIndex < _asset.Deployments.Count; deploymentIndex++)
+            {
+                var deployment = _asset.Deployments[deploymentIndex];
+                <div class="border rounded p-3 mb-3" @key="deployment">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h6 mb-0">Deployment @(deploymentIndex + 1)</h3>
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                @onclick="() => RemoveDeployment(deploymentIndex)">Remove</button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="environment-@deploymentIndex">Environment</label>
+                            <select id="environment-@deploymentIndex" class="form-select" @bind="deployment.Environment">
+                                <option value="">Select environment</option>
+                                <option>Dev</option>
+                                <option>Uat</option>
+                                <option>Production</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="hosting-@deploymentIndex">Hosting platform</label>
+                            <input id="hosting-@deploymentIndex" class="form-control" @bind="deployment.HostingPlatform" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="resource-@deploymentIndex">Resource name</label>
+                            <input id="resource-@deploymentIndex" class="form-control" @bind="deployment.ResourceName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="version-@deploymentIndex">Version</label>
+                            <input id="version-@deploymentIndex" class="form-control" @bind="deployment.Version" />
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h6 mb-0">Endpoints</h4>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    @onclick="() => AddEndpoint(deployment)">Add endpoint</button>
+                        </div>
+                        @if (deployment.Endpoints.Count == 0)
+                        {
+                            <p class="small text-muted">No endpoints added.</p>
+                        }
+                        @for (var endpointIndex = 0; endpointIndex < deployment.Endpoints.Count; endpointIndex++)
+                        {
+                            var endpoint = deployment.Endpoints[endpointIndex];
+                            <div class="row g-2 mb-2 align-items-end" @key="endpoint">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="endpoint-kind-@deploymentIndex-@endpointIndex">Kind</label>
+                                    <input id="endpoint-kind-@deploymentIndex-@endpointIndex" class="form-control" @bind="endpoint.Kind" placeholder="BaseUrl, Health..." />
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="form-label" for="endpoint-url-@deploymentIndex-@endpointIndex">URL</label>
+                                    <input id="endpoint-url-@deploymentIndex-@endpointIndex" class="form-control" type="url" @bind="endpoint.Url" />
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-outline-danger" aria-label="Remove endpoint"
+                                            @onclick="() => RemoveEndpoint(deployment, endpoint)">×</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-check mt-3">
+                        <input id="has-database-@deploymentIndex" class="form-check-input" type="checkbox" @bind="deployment.HasDatabase" />
+                        <label class="form-check-label" for="has-database-@deploymentIndex">Database deployment metadata</label>
+                    </div>
+                    @if (deployment.HasDatabase)
+                    {
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-4">
+                                <label class="form-label" for="database-engine-@deploymentIndex">Engine</label>
+                                <input id="database-engine-@deploymentIndex" class="form-control" @bind="deployment.DatabaseEngine" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="database-server-@deploymentIndex">Server</label>
+                                <input id="database-server-@deploymentIndex" class="form-control" @bind="deployment.DatabaseServer" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="database-name-@deploymentIndex">Database name</label>
+                                <input id="database-name-@deploymentIndex" class="form-control" @bind="deployment.DatabaseName" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="card mb-4">
+        <div class="card-header"><h2 class="h5 mb-0">Evidence</h2></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="evidence-source">Source</label>
+                    <input id="evidence-source" class="form-control" @bind="_asset.EvidenceSource" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="evidence-confidence">Confidence</label>
+                    <input id="evidence-confidence" class="form-control" @bind="_asset.EvidenceConfidence" placeholder="Verified, Inferred..." />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="evidence-date">Last verified date</label>
+                    <input id="evidence-date" class="form-control" type="date" @bind="_asset.EvidenceLastVerifiedDate" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="evidence-verified-by">Verified by</label>
+                    <input id="evidence-verified-by" class="form-control" @bind="_asset.EvidenceVerifiedBy" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <button type="submit" class="btn btn-primary" disabled>Save asset (not implemented)</button>
+</form>
+
+@code {
+    private readonly AssetDraft _asset = new();
+
+    private void AddDeployment() => _asset.Deployments.Add(new DeploymentDraft());
+
+    private void RemoveDeployment(int index) => _asset.Deployments.RemoveAt(index);
+
+    private static void AddEndpoint(DeploymentDraft deployment) =>
+        deployment.Endpoints.Add(new EndpointDraft());
+
+    private static void RemoveEndpoint(DeploymentDraft deployment, EndpointDraft endpoint) =>
+        deployment.Endpoints.Remove(endpoint);
+
+    private sealed class AssetDraft
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string AssetType { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string OwnerTeam { get; set; } = "";
+        public string BusinessCapability { get; set; } = "";
+        public string Criticality { get; set; } = "";
+        public string LifecycleStatus { get; set; } = "";
+        public string Technologies { get; set; } = "";
+        public bool HasRepository { get; set; } = true;
+        public string RepositoryProvider { get; set; } = "";
+        public string RepositoryUrl { get; set; } = "";
+        public string RepositoryDefaultBranch { get; set; } = "main";
+        public string RepositoryPath { get; set; } = "";
+        public List<DeploymentDraft> Deployments { get; } = [new()];
+        public string EvidenceSource { get; set; } = "";
+        public DateTime? EvidenceLastVerifiedDate { get; set; }
+        public string EvidenceVerifiedBy { get; set; } = "";
+        public string EvidenceConfidence { get; set; } = "";
+    }
+
+    private sealed class DeploymentDraft
+    {
+        public string Environment { get; set; } = "";
+        public string HostingPlatform { get; set; } = "";
+        public string ResourceName { get; set; } = "";
+        public string Version { get; set; } = "";
+        public List<EndpointDraft> Endpoints { get; } = [];
+        public bool HasDatabase { get; set; }
+        public string DatabaseEngine { get; set; } = "";
+        public string DatabaseServer { get; set; } = "";
+        public string DatabaseName { get; set; } = "";
+    }
+
+    private sealed class EndpointDraft
+    {
+        public string Kind { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
+}

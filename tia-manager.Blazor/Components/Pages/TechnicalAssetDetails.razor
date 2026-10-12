@@ -1,0 +1,130 @@
+@page "/assets/{AssetId}"
+@rendermode InteractiveServer
+@using tia_manager.Blazor.Services
+@inject TechnicalAssetApiClient AssetApi
+
+<PageTitle>@(_relationships?.AssetId ?? AssetId) relationships</PageTitle>
+
+<p><a href="/assets">← All technical assets</a></p>
+
+@if (_isLoading)
+{
+    <p role="status">Loading asset relationships...</p>
+}
+else if (_errorMessage is not null)
+{
+    <p role="alert" class="text-danger">@_errorMessage</p>
+}
+else if (_relationships is not null)
+{
+    <h1>@_relationships.AssetId</h1>
+    <p>Direct dependencies and consumers for this asset.</p>
+
+    <h2 class="h4 mt-4">Dependencies</h2>
+    @if (_relationships.Outgoing.Count == 0)
+    {
+        <p>This asset has no recorded outgoing dependencies.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Asset</th>
+                        <th scope="col">Relationship</th>
+                        <th scope="col">Environments</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in _relationships.Outgoing)
+                    {
+                        <tr>
+                            <th scope="row">
+                                <a href="@GetAssetDetailsUrl(entry.Asset.Id)">@entry.Asset.Name</a>
+                                <div class="small text-muted">@entry.Asset.AssetType · @entry.Asset.OwnerTeam</div>
+                            </th>
+                            <td>@entry.Relationship.RelationshipType</td>
+                            <td>@string.Join(", ", entry.Relationship.Environments)</td>
+                            <td>@entry.Relationship.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h2 class="h4 mt-4">Consumers</h2>
+    @if (_relationships.Incoming.Count == 0)
+    {
+        <p>This asset has no recorded incoming consumers.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Asset</th>
+                        <th scope="col">Relationship</th>
+                        <th scope="col">Environments</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in _relationships.Incoming)
+                    {
+                        <tr>
+                            <th scope="row">
+                                <a href="@GetAssetDetailsUrl(entry.Asset.Id)">@entry.Asset.Name</a>
+                                <div class="small text-muted">@entry.Asset.AssetType · @entry.Asset.OwnerTeam</div>
+                            </th>
+                            <td>@entry.Relationship.RelationshipType</td>
+                            <td>@string.Join(", ", entry.Relationship.Environments)</td>
+                            <td>@entry.Relationship.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string AssetId { get; set; } = "";
+
+    private TechnicalAssetRelationships? _relationships;
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        _relationships = null;
+
+        try
+        {
+            _relationships = await AssetApi.GetAssetRelationshipsAsync(AssetId);
+        }
+        catch (HttpRequestException exception)
+        {
+            _errorMessage = exception.StatusCode == System.Net.HttpStatusCode.NotFound
+                ? $"Technical asset '{AssetId}' was not found."
+                : "Could not load asset relationships. Check that the Technical Impact API is running and TechnicalImpactApi:BaseUrl is correct.";
+        }
+        catch (InvalidDataException)
+        {
+            _errorMessage = "The Technical Impact API returned invalid relationship data.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string GetAssetDetailsUrl(string assetId) =>
+        $"/assets/{Uri.EscapeDataString(assetId)}";
+}

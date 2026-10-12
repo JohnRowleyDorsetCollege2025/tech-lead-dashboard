@@ -1,0 +1,14 @@
+@tia_manager_HostAddress = http://localhost:5224
+
+GET {{tia_manager_HostAddress}}/api/repositories
+Accept: application/json
+
+###
+
+GET {{tia_manager_HostAddress}}/api/repositories/JohnRowleyDorsetCollege2025/ProjectGuidelines/branches
+Accept: application/json
+
+###
+
+GET {{tia_manager_HostAddress}}/api/repositories/JohnRowleyDorsetCollege2025/your-repository/branch-statistics
+Accept: application/json

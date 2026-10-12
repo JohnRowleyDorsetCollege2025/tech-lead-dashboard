@@ -1,0 +1,136 @@
+@page "/assets"
+@using tia_manager.Blazor.Services
+@inject TechnicalAssetApiClient AssetApi
+
+<PageTitle>Technical assets</PageTitle>
+
+<h1>Technical assets</h1>
+<p>Browse the technical assets and deployments recorded in the catalogue.</p>
+<p><a class="btn btn-primary mb-3" href="/assets/new">Configure a new asset</a></p>
+
+@if (_isLoading)
+{
+    <p role="status">Loading technical assets...</p>
+}
+else if (_errorMessage is not null)
+{
+    <p role="alert" class="text-danger">@_errorMessage</p>
+}
+else if (_assets.Count == 0)
+{
+    <p>No technical assets were returned by the catalogue.</p>
+}
+else
+{
+    <div class="mb-3">
+        <label class="form-label" for="asset-search">Search assets</label>
+        <input id="asset-search" class="form-control" type="search"
+               placeholder="Search by name, description, or owner team"
+               @bind="_searchTerm" @bind:event="oninput" />
+    </div>
+
+    @if (!FilteredAssets.Any())
+    {
+        <p>No assets match “@_searchTerm”.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Asset</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Owner team</th>
+                        <th scope="col">Criticality</th>
+                        <th scope="col">Lifecycle</th>
+                        <th scope="col">Technologies</th>
+                        <th scope="col">Environments</th>
+                        <th scope="col">Repository</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var asset in FilteredAssets)
+                    {
+                        <tr>
+                            <th scope="row">
+                                <a href="@GetAssetDetailsUrl(asset.Id)">@asset.Name</a>
+                                <div class="small text-muted">@asset.Description</div>
+                                <div class="small">Capability: @asset.BusinessCapability</div>
+                            </th>
+                            <td>@asset.AssetType</td>
+                            <td>@asset.OwnerTeam</td>
+                            <td>@asset.Criticality</td>
+                            <td>@asset.LifecycleStatus</td>
+                            <td>@FormatTechnologies(asset.Technologies)</td>
+                            <td>
+                                @foreach (var deployment in asset.Deployments)
+                                {
+                                    <span class="badge text-bg-secondary me-1">@deployment.Environment</span>
+                                }
+                            </td>
+                            <td>
+                                @if (asset.Repository is { } repository)
+                                {
+                                    <a href="@repository.Url" target="_blank" rel="noopener noreferrer">
+                                        @repository.Provider
+                                    </a>
+                                    @if (!string.IsNullOrWhiteSpace(repository.Path))
+                                    {
+                                        <div class="small text-muted">@repository.Path</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="small text-muted">Showing @FilteredAssets.Count() of @_assets.Count assets.</p>
+    }
+}
+
+@code {
+    private IReadOnlyList<TechnicalAssetSummary> _assets = [];
+    private string _searchTerm = "";
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    private IEnumerable<TechnicalAssetSummary> FilteredAssets =>
+        string.IsNullOrWhiteSpace(_searchTerm)
+            ? _assets
+            : _assets.Where(asset =>
+                asset.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                asset.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                asset.OwnerTeam.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _assets = await AssetApi.GetAssetsAsync();
+        }
+        catch (HttpRequestException)
+        {
+            _errorMessage = "Could not load technical assets. Check that the Technical Impact API is running and TechnicalImpactApi:BaseUrl is correct.";
+        }
+        catch (InvalidDataException)
+        {
+            _errorMessage = "The Technical Impact API returned an invalid asset list.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string FormatTechnologies(IReadOnlyList<string> technologies) =>
+        technologies.Count == 0 ? "—" : string.Join(", ", technologies);
+
+    private static string GetAssetDetailsUrl(string assetId) =>
+        $"/assets/{Uri.EscapeDataString(assetId)}";
+}
